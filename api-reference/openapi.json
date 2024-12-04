@@ -1,195 +1,179 @@
-{
-  "openapi": "3.0.1",
-  "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
-  "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
-      }
-    }
-  }
-}
+openapi: 3.0.0
+info:
+  title: SMS Masivos API
+  version: 2.0.0
+  description: API para enviar mensajes SMS a través de SMS Masivos.
+servers:
+  - url: https://api.smsmasivos.com.mx
+tags:
+  - name: Send SMS
+    description: Endpoints para el envío de mensajes SMS.
+paths:
+  /sms/send:
+    post:
+      tags:
+        - Send SMS
+      summary: Enviar un mensaje SMS
+      description: Envía un mensaje SMS a uno o varios destinatarios.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apikey:
+                  type: string
+                  description: Tu clave de API (puede ser opcional si ya se envía en el header).
+                message:
+                  type: string
+                  description: Contenido del mensaje a enviar.
+                numbers:
+                  type: string
+                  description: Número(s) de teléfono de los destinatarios, separados por comas.
+                country_code:
+                  type: string
+                  description: Código de país.
+                sandbox:
+                  type: boolean
+                  description: Indica si se utiliza el modo sandbox.
+                find_country_code:
+                  type: boolean
+                  description: Indica si se debe buscar automáticamente el código de país si no se proporciona.
+                  example: true
+                sender:
+                  type: string
+                  description: Nombre o número que aparece como remitente del mensaje.
+                  example: "SMSMasivos"
+                lang:
+                  type: string
+                  description: Código del idioma para el mensaje, por ejemplo, "es" o "en".
+                  example: "es"
+                date:
+                  type: string
+                  format: date-time
+                  description: Fecha y hora programada para enviar el mensaje (formato ISO 8601).
+                  example: "2024-12-05T10:30:00Z"
+                extra_params:
+                  type: string
+                  description: Parámetros adicionales que se puedan requerir según la configuración del servicio.
+                  example: "param1=value1&param2=value2"
+              required:
+                - message
+                - numbers
+                - country_code
+      responses:
+        '200':
+          description: Mensaje enviado exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Estado de la solicitud.
+                  messageId:
+                    type: string
+                    description: Identificador del mensaje enviado.
+        '400':
+          description: Solicitud incorrecta.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Descripción del error.
+        '401':
+          description: No autorizado.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Descripción del error de autenticación.
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Descripción del error del servidor.
+    get:
+      tags:
+        - Send SMS
+      summary: Enviar SMS
+      description: Enviar un SMS con los parámetros especificados.
+      parameters:
+        - name: apikey
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: numbers
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: message
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: country_code
+          in: query
+          schema:
+            type: string
+        - name: sender
+          in: query
+          schema:
+            type: string
+        - name: sandbox
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Mensaje enviado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  status:
+                    type: integer
+        '400':
+          description: Error en los parámetros de entrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  status:
+                    type: integer
+                  code:
+                    type: string
+                    example: sms_12
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: apiKey
+security:
+  - ApiKeyAuth: []
